@@ -7,6 +7,11 @@ public struct Vec2i {
     public int x, y;
 }
 
+public class ReverseComparer<T> : IComparer<T> {
+    public int Compare(T left, T right) {
+        return Comparer<T>.Default.Compare(right, left);
+    }
+}
 public static class Utils {
     public static IEnumerable<(int, int)> Range2D(int width, int height) {
         for (var x = 0; x < width; ++x) {

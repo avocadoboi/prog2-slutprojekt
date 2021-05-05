@@ -17,16 +17,37 @@ public enum TetrisCell {
 }
 
 public class TetrisBoard : IGrid<TetrisCell> {
-    public TetrisCell[,] Cells { get; private set; }
+    private TetrisCell[,] _cells;
+    public TetrisCell[,] Cells { 
+        get => _cells;
+        set {
+            if (value.GetLength(0) == _cells.GetLength(0) &&
+                value.GetLength(1) == _cells.GetLength(1))
+            {
+                _cells = value;
+            }
+            else {
+                throw new ArgumentException("A tetris board was assigned a grid with wrong dimensions!");
+            }
+        }
+    }
 
-    public TetrisBoard(int width, int height) =>
-        Cells = new TetrisCell[width, height];
+    public TetrisBoard(Vec2i size) =>
+        Cells = new TetrisCell[size.x, size.y];
     public TetrisBoard(TetrisBoard other) => 
         Cells = other.Cells.Clone() as TetrisCell[,];
 }
 
-// public class Game {
-    // private 
-// }
+public class TetrisGame {
+    private TetrisBoard _board;
+    private Tetromino _active_tetromino;
+
+    public TetrisBoard Board {
+        get; set;
+    }
+    
+
+    // TetrisGame()
+}
 
 } // namespace tetris_backend
