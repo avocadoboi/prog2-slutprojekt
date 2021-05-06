@@ -4,7 +4,9 @@ using System.Collections.Generic;
 namespace tetris_backend {
 
 public struct Vec2i {
-    public int x, y;
+    public int X, Y;
+
+    public Vec2i(int x, int y) => (X, Y) = (x, y);
 }
 
 public class ReverseComparer<T> : IComparer<T> {

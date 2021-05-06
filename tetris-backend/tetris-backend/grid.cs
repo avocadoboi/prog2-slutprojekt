@@ -53,12 +53,12 @@ public class SquareGrid<T> : IGrid<T> {
     }
 }
 
-static class GridExtensions {
+public static class GridExtensions {
     public static void Draw(this IGrid<TetrisCell> board, IGrid<TetrisCell> to_draw, Vec2i position) 
     {
         foreach (var (x, y) in to_draw.Cells.Indices()) {
             if (to_draw.Cells[x, y] != TetrisCell.Empty) {
-                board.Cells[x + position.x, y + position.y] = to_draw.Cells[x, y];
+                board.Cells[x + position.X, y + position.Y] = to_draw.Cells[x, y];
             }
         }
     }

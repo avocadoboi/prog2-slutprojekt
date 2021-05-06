@@ -3,6 +3,10 @@ using System;
 
 namespace tetris_backend {
 
+public enum TetrisCell {
+    Empty, I, J, L, O, S, T, Z
+}
+
 /*
     A tetromino is a square grid of tetris cells that can be constructed 
     conveniently from a grid of cell flags and a cell type.
