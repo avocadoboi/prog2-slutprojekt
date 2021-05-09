@@ -1,11 +1,16 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://assets/fonts/itim_font.tres" type="DynamicFont" id=1]
 [ext_resource path="res://assets/images/glad_tetromino.png" type="Texture" id=2]
+[ext_resource path="res://themes/global_theme.tres" type="Theme" id=3]
+[ext_resource path="res://scripts/main_menu.cs" type="Script" id=4]
+
+[sub_resource type="StyleBoxEmpty" id=1]
 
 [node name="MarginContainer" type="MarginContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+theme = ExtResource( 3 )
 custom_constants/margin_right = 0
 custom_constants/margin_top = 0
 custom_constants/margin_left = 0
@@ -19,21 +24,54 @@ margin_right = 450.0
 margin_bottom = 510.0
 custom_constants/separation = 20
 alignment = 1
+script = ExtResource( 4 )
 
-[node name="Label" type="Label" parent="VBoxContainer"]
-margin_top = 167.0
+[node name="tetris_title" type="Label" parent="VBoxContainer"]
+margin_top = 73.0
 margin_right = 450.0
-margin_bottom = 223.0
+margin_bottom = 129.0
 custom_fonts/font = ExtResource( 1 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
-text = "Tetris :^)"
+text = "Tetris !!!"
 align = 1
 
-[node name="TextureRect" type="TextureRect" parent="VBoxContainer"]
-margin_top = 243.0
+[node name="tetris_logo" type="TextureRect" parent="VBoxContainer"]
+margin_top = 149.0
 margin_right = 450.0
-margin_bottom = 343.0
+margin_bottom = 249.0
 rect_min_size = Vector2( 100, 100 )
 texture = ExtResource( 2 )
 expand = true
 stretch_mode = 6
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+light_mask = 0
+margin_top = 269.0
+margin_right = 450.0
+margin_bottom = 274.0
+custom_styles/separator = SubResource( 1 )
+custom_constants/separation = 5
+
+[node name="play_container" type="CenterContainer" parent="VBoxContainer"]
+margin_top = 294.0
+margin_right = 450.0
+margin_bottom = 355.0
+
+[node name="button" type="Button" parent="VBoxContainer/play_container"]
+margin_left = 173.0
+margin_right = 276.0
+margin_bottom = 61.0
+size_flags_horizontal = 0
+text = "Play"
+
+[node name="highscores_container" type="CenterContainer" parent="VBoxContainer"]
+margin_top = 375.0
+margin_right = 450.0
+margin_bottom = 436.0
+
+[node name="button" type="Button" parent="VBoxContainer/highscores_container"]
+margin_left = 124.0
+margin_right = 325.0
+margin_bottom = 61.0
+size_flags_horizontal = 0
+text = "Highscores"

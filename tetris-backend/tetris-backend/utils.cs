@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace tetris_backend {
 
@@ -31,6 +32,8 @@ public static class CollectionExtensions {
     public static IEnumerable<(int, int)> Indices<T>(this T[,] array) {
         return Utils.Range2D(array.GetLength(0), array.GetLength(1));
     }
+    public static IEnumerable<(int, T)> Enumerate<T>(this IEnumerable<T> enumerable) 
+        => enumerable.Select((value, index) => (index, value));
 }
 
 } // namespace tetris_backend

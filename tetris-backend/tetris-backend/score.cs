@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace tetris_backend {
 
@@ -76,11 +75,11 @@ public class PlayerScoreFile : IScoreStore<PlayerScore> {
 	string FilePath => _file_path;
 	
 	public void SaveScores(IEnumerable<PlayerScore> scores) {
-		File.WriteAllBytes(_file_path, JsonSerializer.SerializeToUtf8Bytes(scores));
+		File.WriteAllText(_file_path, JsonConvert.SerializeObject(scores));
 	}
 	public List<PlayerScore> LoadScores() {
 		if (File.Exists(_file_path)) {
-			return JsonSerializer.Deserialize<List<PlayerScore>>(File.ReadAllText(_file_path));
+			return JsonConvert.DeserializeObject<List<PlayerScore>>(File.ReadAllText(_file_path));
 		}
 		return new List<PlayerScore>();
 	}

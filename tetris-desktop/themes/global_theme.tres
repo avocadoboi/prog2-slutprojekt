@@ -1,0 +1,48 @@
+[gd_resource type="Theme" load_steps=7 format=2]
+
+[ext_resource path="res://assets/fonts/itim_font.tres" type="DynamicFont" id=1]
+[ext_resource path="res://themes/button_normal.stylebox" type="StyleBox" id=2]
+[ext_resource path="res://assets/fonts/itim_font_button.tres" type="DynamicFont" id=3]
+[ext_resource path="res://themes/item_list_box.tres" type="StyleBox" id=4]
+[ext_resource path="res://assets/fonts/Itim-Regular.ttf" type="DynamicFontData" id=5]
+
+[sub_resource type="DynamicFont" id=1]
+size = 28
+font_data = ExtResource( 5 )
+
+[resource]
+default_font = ExtResource( 1 )
+Button/colors/font_color = Color( 0, 0, 0, 1 )
+Button/colors/font_color_disabled = Color( 0, 0, 0, 0.352941 )
+Button/colors/font_color_hover = Color( 0.254902, 0.254902, 0.254902, 1 )
+Button/colors/font_color_pressed = Color( 0.45098, 0.45098, 0.45098, 1 )
+Button/constants/hseparation = 2
+Button/fonts/font = ExtResource( 3 )
+Button/styles/disabled = ExtResource( 2 )
+Button/styles/focus = ExtResource( 2 )
+Button/styles/hover = ExtResource( 2 )
+Button/styles/normal = ExtResource( 2 )
+Button/styles/pressed = ExtResource( 2 )
+ItemList/colors/font_color = Color( 0, 0, 0, 1 )
+ItemList/colors/font_color_selected = Color( 0, 0.298039, 1, 1 )
+ItemList/colors/guide_color = Color( 0, 0, 0, 0 )
+ItemList/constants/hseparation = 15
+ItemList/constants/icon_margin = 4
+ItemList/constants/line_separation = 2
+ItemList/constants/vseparation = 2
+ItemList/fonts/font = SubResource( 1 )
+ItemList/styles/bg = ExtResource( 4 )
+ItemList/styles/bg_focus = null
+ItemList/styles/cursor = null
+ItemList/styles/cursor_unfocused = null
+ItemList/styles/selected = null
+ItemList/styles/selected_focus = null
+Label/colors/font_color = Color( 0, 0, 0, 1 )
+Label/colors/font_color_shadow = Color( 0, 0, 0, 0 )
+Label/colors/font_outline_modulate = Color( 1, 1, 1, 0 )
+Label/constants/line_spacing = 3
+Label/constants/shadow_as_outline = 0
+Label/constants/shadow_offset_x = 1
+Label/constants/shadow_offset_y = 1
+Label/fonts/font = ExtResource( 1 )
+Label/styles/normal = null
