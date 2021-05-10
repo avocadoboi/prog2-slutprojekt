@@ -7,7 +7,7 @@ namespace tetris_backend_tests {
 
 public class ScoreTests
 {
-	public const string FILE_NAME = "test.json";
+	public const string FILE_NAME = "test_scores";
 	
 	[Fact]
 	public void PlayerScoreList() {
