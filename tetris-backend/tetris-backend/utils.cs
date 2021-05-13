@@ -36,4 +36,4 @@ public static class CollectionExtensions {
         => enumerable.Select((value, index) => (index, value));
 }
 
-} // namespace tetris_backend
+}

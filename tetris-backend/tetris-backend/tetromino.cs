@@ -11,7 +11,7 @@ public enum TetrisCell {
     A tetromino is a square grid of tetris cells that can be constructed 
     conveniently from a grid of cell flags and a cell type.
 */
-public class Tetromino : SquareGrid<TetrisCell> {
+class Tetromino : SquareGrid<TetrisCell> {
     public TetrisCell Type { get; private set; }
 
     /*
@@ -35,7 +35,11 @@ public class Tetromino : SquareGrid<TetrisCell> {
         (Type, Cells) = (other.Type, other.Cells.Clone() as TetrisCell[,]);
 }
 
-public static class Tetrominoes {
+static class Tetrominoes {
+    public static Tetromino GetRandom() {
+        return tetrominoes[new Random().Next(tetrominoes.Length)];
+    }
+    
     public static Tetromino[] tetrominoes = {
         new Tetromino(TetrisCell.I, new int[,] {
             {0, 0, 0, 0},
@@ -75,4 +79,4 @@ public static class Tetrominoes {
     };
 }
 
-} // namespace tetris_backend
+}

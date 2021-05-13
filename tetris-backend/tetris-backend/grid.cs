@@ -1,12 +1,13 @@
 using System;
+using System.Linq;
 
 namespace tetris_backend {
 
-public interface IGrid<T> {
+interface IGrid<T> {
     T[,] Cells { get; }
 }
 
-public enum Direction1D {
+enum Direction1D {
     Left, Right
 }
 
@@ -14,7 +15,7 @@ public enum Direction1D {
     A grid that holds the invariant of being square.
     It also provides functionality that is specific to square grids.
 */
-public class SquareGrid<T> : IGrid<T> {
+class SquareGrid<T> : IGrid<T> {
     private T[,] _cells;
 
     public T[,] Cells {
@@ -53,7 +54,7 @@ public class SquareGrid<T> : IGrid<T> {
     }
 }
 
-public static class GridExtensions {
+static class GridExtensions {
     public static void Draw(this IGrid<TetrisCell> board, IGrid<TetrisCell> to_draw, Vec2i position) 
     {
         foreach (var (x, y) in to_draw.Cells.Indices()) {
@@ -62,6 +63,13 @@ public static class GridExtensions {
             }
         }
     }
+
+    public static bool OverlapsWith(this IGrid<TetrisCell> board, IGrid<TetrisCell> other, Vec2i offset)
+    {
+        return other.Cells.Indices().Any(((int x, int y) pos) => 
+            board.Cells[pos.x + offset.X, pos.y + offset.Y] != TetrisCell.Empty && 
+            other.Cells[pos.x, pos.y] != TetrisCell.Empty);
+    }
 }
 
-} // namespace tetris_backend
+}

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace tetris_backend {
 
-public interface IScoreStore<T> {
+interface IScoreStore<T> {
 	void SaveScores(IEnumerable<T> scores);
 	List<T> LoadScores();
 }
@@ -13,7 +13,7 @@ public interface IScoreStore<T> {
 /*
 	A list of scores that automatically handles saving and loading to/from some score store.
 */
-public class ScoreList<T> 
+class ScoreList<T> 
 	where T: IComparable<T>
 {
 	private IScoreStore<T> _store;
@@ -82,15 +82,15 @@ public readonly struct PlayerScore :
 /*
 	Represents a score file, loads and saves of PlayerScores.
 */
-public class PlayerScoreFile : IScoreStore<PlayerScore> 
+class PlayerScoreFile : IScoreStore<PlayerScore> 
 {
 	private string _file_path;
 	public string FilePath => _file_path;
 	
 	/*
-		I could not get any kind of JSON serialization working together with Godot...
-		So I'm just writing my own simple csv-type serialization. It might be a little 
-		faster, not that it matters.
+		I could not get any kind of JSON serialization working together with 
+		Godot at first, so I wrote my own simple csv-type serialization. 
+		I fixed the issue with Godot, but I'm keeping this.
 	*/
 	
 	/*
@@ -114,7 +114,8 @@ public class PlayerScoreFile : IScoreStore<PlayerScore>
 		{
 			return File.ReadAllText(_file_path).Split('\n')
 				// The file ends with a \n, so the last element will be empty. 
-				// This is safer than doing [..^1]. We'll simply allow but ignore empty lines in our file format.
+				// This is safer than doing [..^1]. We'll simply allow but 
+				// ignore empty lines in our file format.
 				.Where((s) => s.Length != 0) 
 				.Select(_ScoreFromLine)
 				.ToList();
@@ -142,4 +143,67 @@ public class PlayerScoreFile : IScoreStore<PlayerScore>
 		_file_path = file_name;
 }
 
-} // namespace tetris_backend
+/*
+	Holds the current game score.
+*/
+public readonly struct CurrentScore {
+    public int Points { get; init; }
+    public int Rows { get; init; }
+}
+
+interface IScoreKeeper<_ScoreGainData> {
+	CurrentScore Score { get; }
+
+	/*
+		Calculates a score gain from some data structure containing
+		information about the game state necessary to calculate score.
+		For example, this method would need a different data structure
+		if it were able to calculate T-spin points than if it only 
+		calculated score based on level and rows cleared.
+	*/
+	void GainScore(_ScoreGainData score_gain_data);
+}
+
+readonly struct BasicScoreGainData {
+	private readonly int _rows_cleared;
+	public int RowsCleared { 
+		get => _rows_cleared; 
+		init => {
+			if (value >= 0 && value <= 4) {
+				_rows_cleared = value;
+			}
+			else {
+				throw new ArgumentOutOfRangeException(nameof(data.RowsCleared), $"Only 1-4 rows can be cleared at once in Tetris.");
+			}
+		}
+	}
+	public int GameLevel { get; init; }
+}
+
+/*
+	Keeps track of points and rows scored in a game.
+*/
+struct BasicScoreKeeper : IScoreKeeper<BasicScoreGainData> {
+    private int _points;
+    private int _rows;
+
+    public CurrentScore Score => new CurrentScore{Points = _points, Rows = _rows};
+    
+	/*
+		Increases the score as a function of the number of rows cleared 
+		and the game level, according to https://tetris.fandom.com/wiki/Scoring
+	*/
+    public void GainScore(BasicScoreGainData data) {
+        _rows += data.RowsCleared;
+        
+        _points += data.RowsCleared switch {
+            1 => 40,
+            2 => 100,
+            3 => 300,
+            4 => 1200,
+            _ => 0,
+        }*(data.GameLevel + 1);
+    }
+}
+
+}
