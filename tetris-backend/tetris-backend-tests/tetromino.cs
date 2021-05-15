@@ -10,11 +10,11 @@ public class TetrominoTests
     public void TetrominoInitialization()
     {
         // Transposed to [x, y] coordinates.
-        var tetromino_i_0 = new TetrisCell[,] {
-            {0, TetrisCell.I, 0, 0},
-            {0, TetrisCell.I, 0, 0},
-            {0, TetrisCell.I, 0, 0},
-            {0, TetrisCell.I, 0, 0},
+        var tetromino_i_0 = new TetrisCell[][] {
+            new TetrisCell[]{0, 0, 0, 0},
+            new TetrisCell[]{TetrisCell.I, TetrisCell.I, TetrisCell.I, TetrisCell.I},
+            new TetrisCell[]{0, 0, 0, 0},
+            new TetrisCell[]{0, 0, 0, 0},
         };
         var tetromino_i_1 = new Tetromino(TetrisCell.I, new int[,] {
             {0, 0, 0, 0},
