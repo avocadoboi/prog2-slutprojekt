@@ -1,12 +1,10 @@
 using Godot;
 using System;
-using tetris_backend;
+using TetrisBackend;
 using System.Collections.Generic;
 
-public class highscore_list : GridContainer
+public class HighscoreList : GridContainer
 {
-	private PlayerScoreFile _file = new PlayerScoreFile(Constants.score_file);
-
 	public override void _Ready()
 	{
 		_LoadScoreTable();
@@ -17,14 +15,14 @@ public class highscore_list : GridContainer
 
 	private void _LoadScoreTable()
 	{
-		var list = _file.LoadScores();
-		if (list.Count == 0)
+		var scores = BackendInstance.Game.ScoreList;
+		if (scores.Count == 0)
 		{
 			_AddNoScoresInfo();
 		}
 		else
 		{
-			_AddScores(list);
+			_AddScores(scores);
 		}
 	}
 
@@ -32,7 +30,7 @@ public class highscore_list : GridContainer
 	{
 		foreach ((int i, PlayerScore item) in scores.Enumerate())
 		{
-			AddChild(new Label() { Text = i.ToString() });
+			AddChild(new Label() { Text = $"{i+1}." });
 			AddChild(new Label() { Text = item.Name });
 			AddChild(new Label() { Text = item.Score.ToString() });
 		}
@@ -50,7 +48,7 @@ public class highscore_list : GridContainer
 	}
 	private void _ResetAll()
 	{
-		_file.SaveScores(new PlayerScore[0]);
+		BackendInstance.Game.RemoveAllScores();
 
 		foreach (Node child in GetChildren())
 		{

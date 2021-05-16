@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace tetris_backend
+namespace TetrisBackend
 {
-
 	/*
 		A grid of tetris cells with fixed dimensions.
 	*/
@@ -36,7 +35,7 @@ namespace tetris_backend
 		*/
 		public int[] FindFullRows()
 		{
-			return _cells.Where((row, i) => row.All(x => x != TetrisCell.Empty)).Select((row, i) => i).ToArray();
+			return _cells.Select((row, i) => i).Where(i => _cells[i].All(x => x != TetrisCell.Empty)).ToArray();
 		}
 
 		/*
@@ -47,27 +46,27 @@ namespace tetris_backend
 			var size = Size;
 			
 			// The index of the row to copy from.
-			var copy_row = size.Y - 1;
+			var copyRow = size.Y - 1;
 
-			for (var row = copy_row; row >= 0; --row, --copy_row)
+			for (var row = copyRow; row >= 0; --row, --copyRow)
 			{
 				// Can't copy from a row that doesn't exist, so we fill with empty cells.
-				if (copy_row < 0)
+				if (copyRow < 0)
 				{
 					Array.Fill(_cells[row], TetrisCell.Empty);
 				}
 				else 
 				{
-					// Move the row to copy from up one step if it is a full row.
+					// Move the row index to copy from up one step if it is a full row.
 					// This effectively removes it.
-					if (_cells[copy_row].All(x => x != TetrisCell.Empty))
+					while (_cells[copyRow].All(x => x != TetrisCell.Empty))
 					{
-						--copy_row;
+						--copyRow;
 					}
 					// If it is the same row then the copy is a no-op.
-					if (copy_row != row)
+					if (copyRow != row)
 					{
-						Array.Copy(_cells[copy_row], _cells[row], size.X);
+						Array.Copy(_cells[copyRow], _cells[row], size.X);
 					}
 				}
 			}
@@ -90,12 +89,16 @@ namespace tetris_backend
 			(Cells, Size) = (other.Cells.Select(row => row.ToArray()).ToArray(), other.Size);
 	}
 
+	/*
+		Gets notified of events from the tetris game board.
+	*/
 	interface IBoardObserver
 	{
-		void HandleRowsCleared(int[] row_indices);
+		void HandleRowsCleared(int[] rowIndices);
 		void HandleGameOver();
 		void HandleGameStart();
-		void HandleNewTetromino(Tetromino new_tetromino, Tetromino next_tetromino);
+		void HandleNewTetromino(Tetromino newTetromino, Tetromino nextTetromino);
+		void HandleBoardUpdated(TetrisBoard newBoard);
 	}
 
 	/*
@@ -107,39 +110,45 @@ namespace tetris_backend
 		private IBoardObserver _observer;
 
 		private TetrisBoard _board;
-		private TetrisBoard _dynamic_board;
 
-		private Tetromino _next_tetromino = Tetrominoes.GetRandom();
-		private Tetromino _active_tetromino;
-		private Vec2i _tetromino_position;
+		private Tetromino _nextTetromino = Tetrominoes.GetRandom();
+		private Tetromino _holdTetromino;
 
-		public TetrisBoard Board => _dynamic_board;
+		private Tetromino _activeTetromino;
+		private Vec2i _tetrominoPosition;
 
-		public void Step()
+		private void _CheckGameStarted()
 		{
-			_tetromino_position.Y += 1;
-
-			if (_board.IntersectsTetromino(_active_tetromino, _tetromino_position))
+			if (_activeTetromino == null)
 			{
-				_tetromino_position.Y -= 1;
-
-				_PlaceTetromino();
+				_SpawnTetromino();
+				_observer.HandleGameStart();
 			}
+		}
 
-			_dynamic_board = new TetrisBoard(_board);
-			_dynamic_board.Draw(_active_tetromino, _tetromino_position);
+		private bool _MoveWithoutIntersection(Action forwards, Action backwards)
+		{
+			_CheckGameStarted();
+
+			forwards();
+			if (_board.IntersectsTetromino(_activeTetromino, _tetrominoPosition))
+			{
+				backwards();
+				return false;
+			}
+			return true;
 		}
 
 		private void _PlaceTetromino()
 		{
-			_board.Draw(_active_tetromino, _tetromino_position);
+			_board.Draw(_activeTetromino, _tetrominoPosition);
 
-			var full_row_indices = _board.FindFullRows();
-			if (full_row_indices.Length != 0)
+			var fullRowIndices = _board.FindFullRows();
+			if (fullRowIndices.Length != 0)
 			{
 				_board.ClearFullRows();
 
-				_observer.HandleRowsCleared(full_row_indices);
+				_observer.HandleRowsCleared(fullRowIndices);
 			}
 
 			_SpawnTetromino();
@@ -147,27 +156,103 @@ namespace tetris_backend
 
 		private void _SpawnTetromino()
 		{
-			_active_tetromino = _next_tetromino;
-			_next_tetromino = Tetrominoes.GetRandom();
-			_tetromino_position = new Vec2i(new Random().Next(_board.Size.X - _active_tetromino.Width), 0);
-			_observer.HandleNewTetromino(_active_tetromino, _next_tetromino);
+			_activeTetromino = _nextTetromino;
+			_nextTetromino = Tetrominoes.GetRandom();
+			_RespawnTetromino();
+		}
+		private void _RespawnTetromino()
+		{
+			_tetrominoPosition = new Vec2i(new Random().Next(_board.Size.X - _activeTetromino.Width), 0);
+
+			if (_board.IntersectsTetromino(_activeTetromino, _tetrominoPosition))
+			{
+				_observer.HandleGameOver();
+			}
+			else
+			{
+				_observer.HandleNewTetromino(_activeTetromino, _nextTetromino);
+			}
 		}
 
-		public void Restart()
+		public void Reset()
 		{
 			_board = new TetrisBoard(_board.Size);
-			_observer.HandleGameStart();
+			_activeTetromino = null;
+		}
+
+		private void _UpdateBoard()
+		{
+			var board = new TetrisBoard(_board);
+			board.Draw(_activeTetromino, _tetrominoPosition);
+			_observer.HandleBoardUpdated(board);
+		}
+
+		public void Step()
+		{
+			_MoveWithoutIntersection(
+				() => _tetrominoPosition.Y += 1, 
+				() => {
+					_tetrominoPosition.Y -= 1;
+					_PlaceTetromino();
+				});
+
+			_UpdateBoard();
+		}
+
+		public void MoveLeft()
+		{
+			if (_MoveWithoutIntersection(() => --_tetrominoPosition.X, () => ++_tetrominoPosition.X))
+			{
+				_UpdateBoard();
+			}
+		}
+		public void MoveRight()
+		{
+			if (_MoveWithoutIntersection(() => ++_tetrominoPosition.X, () => --_tetrominoPosition.X))
+			{
+				_UpdateBoard();
+			}
+		}
+		public void RotateLeft()
+		{
+			if (_MoveWithoutIntersection(() => _activeTetromino.Rotate(Direction1D.Left), 
+				() => _activeTetromino.Rotate(Direction1D.Right)))
+			{
+				_UpdateBoard();
+			}
+		}
+		public void RotateRight()
+		{
+			if (_MoveWithoutIntersection(() => _activeTetromino.Rotate(Direction1D.Right), 
+				() => _activeTetromino.Rotate(Direction1D.Left)))
+			{
+				_UpdateBoard();
+			}
+		}
+
+		public void HoldTetromino()
+		{
+			if (_holdTetromino == null)
+			{
+				_holdTetromino = _activeTetromino;
+				_SpawnTetromino();
+			}
+			else
+			{
+				(_holdTetromino, _activeTetromino) = (_activeTetromino, _holdTetromino);
+				_RespawnTetromino();
+			}
+		}
+
+		public void Drop()
+		{
+
 		}
 
 		public BoardLogic(Vec2i size, IBoardObserver listener)
 		{
 			_board = new TetrisBoard(size);
-			_dynamic_board = new TetrisBoard(size);
 			_observer = listener;
-
-			_SpawnTetromino();
-			_observer.HandleGameStart();
 		}
 	}
-
 }

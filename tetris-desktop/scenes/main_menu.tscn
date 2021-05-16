@@ -1,9 +1,8 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://assets/fonts/itim_font.tres" type="DynamicFont" id=1]
+[ext_resource path="res://scripts/main_menu/MainMenu.cs" type="Script" id=1]
 [ext_resource path="res://assets/images/glad_tetromino.png" type="Texture" id=2]
 [ext_resource path="res://themes/global_theme.tres" type="Theme" id=3]
-[ext_resource path="res://scripts/main_menu.cs" type="Script" id=4]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -24,14 +23,12 @@ margin_right = 450.0
 margin_bottom = 510.0
 custom_constants/separation = 20
 alignment = 1
-script = ExtResource( 4 )
+script = ExtResource( 1 )
 
 [node name="tetris_title" type="Label" parent="VBoxContainer"]
 margin_top = 73.0
 margin_right = 450.0
 margin_bottom = 129.0
-custom_fonts/font = ExtResource( 1 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Tetris !!!"
 align = 1
 

@@ -1,84 +1,83 @@
 using System.Collections.Generic;
 using Xunit;
-using tetris_backend;
+using TetrisBackend;
 
-namespace tetris_backend_tests {
-
-public class TetrominoTests
+namespace TetrisBackendTests 
 {
-    [Fact]
-    public void TetrominoInitialization()
+    public class TetrominoTests
     {
-        // Transposed to [x, y] coordinates.
-        var tetromino_i_0 = new TetrisCell[][] {
-            new TetrisCell[]{0, 0, 0, 0},
-            new TetrisCell[]{TetrisCell.I, TetrisCell.I, TetrisCell.I, TetrisCell.I},
-            new TetrisCell[]{0, 0, 0, 0},
-            new TetrisCell[]{0, 0, 0, 0},
-        };
-        var tetromino_i_1 = new Tetromino(TetrisCell.I, new int[,] {
-            {0, 0, 0, 0},
-            {1, 1, 1, 1},
-            {0, 0, 0, 0},
-            {0, 0, 0, 0},
-        });
-        Assert.Equal(tetromino_i_0, tetromino_i_1.Cells);
-    }
-
-    public static IEnumerable<object[]> rotation_data = new Tetromino[][] {
-        new Tetromino[] {
-            new Tetromino(TetrisCell.Z, new int[,] {
-                {1, 1, 0},
-                {0, 1, 1},
-                {0, 0, 0},
-            }),
-            new Tetromino(TetrisCell.Z, new int[,] {
-                {0, 1, 0},
-                {1, 1, 0},
-                {1, 0, 0},
-            }),
-            new Tetromino(TetrisCell.Z, new int[,] {
-                {0, 0, 1},
-                {0, 1, 1},
-                {0, 1, 0},
-            })
-        },
-        new Tetromino[] {
-            new Tetromino(TetrisCell.I, new int[,] {
+        [Fact]
+        public void TetrominoInitialization()
+        {
+            // Transposed to [x, y] coordinates.
+            var tetromino_i_0 = new TetrisCell[][] {
+                new TetrisCell[]{0, 0, 0, 0},
+                new TetrisCell[]{TetrisCell.I, TetrisCell.I, TetrisCell.I, TetrisCell.I},
+                new TetrisCell[]{0, 0, 0, 0},
+                new TetrisCell[]{0, 0, 0, 0},
+            };
+            var tetromino_i_1 = new Tetromino(TetrisCell.I, new int[,] {
                 {0, 0, 0, 0},
                 {1, 1, 1, 1},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
-            }),
-            new Tetromino(TetrisCell.I, new int[,] {
-                {0, 1, 0, 0},
-                {0, 1, 0, 0},
-                {0, 1, 0, 0},
-                {0, 1, 0, 0},
-            }),
-            new Tetromino(TetrisCell.I, new int[,] {
-                {0, 0, 1, 0},
-                {0, 0, 1, 0},
-                {0, 0, 1, 0},
-                {0, 0, 1, 0},
-            })
+            });
+            Assert.Equal(tetromino_i_0, tetromino_i_1.Cells);
         }
-    };
 
-    [Theory]
-    [MemberData(nameof(rotation_data))]
-    public void TetrominoRotation(Tetromino original, Tetromino left_expected, Tetromino right_expected)
-    {
-        var left_actual = new Tetromino(original);
-        left_actual.Rotate(Direction1D.Left);
-        
-        Assert.Equal(left_expected.Cells, left_actual.Cells);
+        public static IEnumerable<object[]> rotationData = new Tetromino[][] {
+            new Tetromino[] {
+                new Tetromino(TetrisCell.Z, new int[,] {
+                    {1, 1, 0},
+                    {0, 1, 1},
+                    {0, 0, 0},
+                }),
+                new Tetromino(TetrisCell.Z, new int[,] {
+                    {0, 1, 0},
+                    {1, 1, 0},
+                    {1, 0, 0},
+                }),
+                new Tetromino(TetrisCell.Z, new int[,] {
+                    {0, 0, 1},
+                    {0, 1, 1},
+                    {0, 1, 0},
+                })
+            },
+            new Tetromino[] {
+                new Tetromino(TetrisCell.I, new int[,] {
+                    {0, 0, 0, 0},
+                    {1, 1, 1, 1},
+                    {0, 0, 0, 0},
+                    {0, 0, 0, 0},
+                }),
+                new Tetromino(TetrisCell.I, new int[,] {
+                    {0, 1, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 1, 0, 0},
+                    {0, 1, 0, 0},
+                }),
+                new Tetromino(TetrisCell.I, new int[,] {
+                    {0, 0, 1, 0},
+                    {0, 0, 1, 0},
+                    {0, 0, 1, 0},
+                    {0, 0, 1, 0},
+                })
+            }
+        };
 
-        var right_actual = new Tetromino(original);
-        right_actual.Rotate(Direction1D.Right);
+        [Theory]
+        [MemberData(nameof(rotationData))]
+        public void TetrominoRotation(Tetromino original, Tetromino leftExpected, Tetromino rightExpected)
+        {
+            var leftActual = new Tetromino(original);
+            leftActual.Rotate(Direction1D.Left);
+            
+            Assert.Equal(leftExpected.Cells, leftActual.Cells);
 
-        Assert.Equal(right_expected.Cells, right_actual.Cells);
+            var rightActual = new Tetromino(original);
+            rightActual.Rotate(Direction1D.Right);
+
+            Assert.Equal(rightExpected.Cells, rightActual.Cells);
+        }
     }
 }
-
-} // namespace tetris_backend_tests

@@ -1,65 +1,143 @@
 using System.Collections.Generic;
+using System;
 
-namespace tetris_backend
+namespace TetrisBackend
 {
-
 	public enum GameState
 	{
 		Running,
 		Over,
 	}
 
+	public struct TetrisLevel
+	{
+		public int Level { get; private set; }
+
+		/*
+			Returns true if the level increased.
+		*/
+		public bool Update(int totalLinesScored)
+		{
+			// https://tetris.fandom.com/wiki/Tetris_(NES,_Nintendo)
+			// https://www.desmos.com/calculator/knpxxvajv5?lang=sv-SE
+			if (Level < 9 && totalLinesScored > 5*(Level + 1)*(Level + 2) ||
+				Level >= 9 && totalLinesScored > 100*Level - 350)
+			{
+				++Level;
+				return true;
+			}
+			return false;
+		}
+		public void Reset()
+		{
+			Level = 0;
+		}
+
+		public static int CalculateFramesPerCell(int level)
+		{
+			// https://tetris.fandom.com/wiki/Tetris_(NES,_Nintendo)
+			return level switch {
+				<0 => throw new ArgumentOutOfRangeException(nameof(level), "Negative tetris levels are impossible!"),
+				>=0 and <=8 => 48 - level*5,
+				9 => 6,
+				>=10 and <=12 => 5,
+				>=13 and <=15 => 4,
+				>=16 and <=18 => 3,
+				>=19 and <=28 => 2,
+				>=29 => 1,
+			};
+		}
+
+		public TetrisLevel(int startLevel) => Level = startLevel;
+	}
+
 	public interface ITetrisStateObserver
 	{
-		void HandleNewTetromino(Tetromino new_tetromino, Tetromino next_tetromino) { }
-		void HandleRowsCleared(int[] row_indices) { }
-		void HandleScored(CurrentScore new_score) { }
+		void HandleNewTetromino(Tetromino newTetromino, Tetromino nextTetromino) { }
+		void HandleRowsCleared(int[] rowIndices) { }
+		void HandleScored(CurrentScore newScore) { }
+		void HandleLevelUp(int newLevel) { }
 		void HandleGameOver() { }
 		void HandleGameStart() { }
+		void HandleBoardUpdated(TetrisBoard newBoard) { }
 	}
 
 	class StateLogic : IBoardObserver
 	{
-		private BasicScoreKeeper _score_keeper = new BasicScoreKeeper();
-		// public CurrentScore Score => _score_keeper.Score;
+		private BasicScoreKeeper _scoreKeeper = new BasicScoreKeeper();
+		public CurrentScore CurrentScore => _scoreKeeper.Score;
 
-		private ScoreList<PlayerScore> _score_list;
-		// public List<PlayerScore> ScoreList => _score_list.Scores;
+		private TetrisLevel _level;
+		public int Level => _level.Level;
 
-		// private GameState _state = GameState.Running;
-		// public GameState State => _state;
+		private ScoreList<PlayerScore> _scoreList;
+		public List<PlayerScore> ScoreList => _scoreList.Scores;
+
+		public GameState GameState { get; private set; }
+
+		public void Reset()
+		{
+			GameState = GameState.Running;
+			_scoreKeeper = new BasicScoreKeeper();
+			_level.Reset();
+		}
+		public void SaveScore(string playerName)
+		{
+			_scoreList.AddScore(new PlayerScore(playerName, _scoreKeeper.Score.Points));
+		}
+		public void RemoveAllScores()
+		{
+			_scoreList.RemoveAll();
+		}
 
 		private List<ITetrisStateObserver> _observers = new List<ITetrisStateObserver>();
 
 		public void AddObserver(ITetrisStateObserver observer)
 		{
-			_observers.Add(observer);
+			if (!_observers.Contains(observer))
+			{
+				_observers.Add(observer);
+			}
 		}
-
-		public void SaveScore(string player_name)
+		public void RemoveObserver(ITetrisStateObserver observer)
 		{
-			_score_list.AddScore(new PlayerScore(player_name, _score_keeper.Score.Points));
+			_observers.Remove(observer);
 		}
+		
+		private void _UpdateLevel()
+		{
+			if (_level.Update(CurrentScore.Rows))
+			{
+				foreach (var observer in _observers)
+				{
+					observer.HandleLevelUp(Level);
+				}
+			}
+		}
+		
 		void IBoardObserver.HandleRowsCleared(int[] indices)
 		{
-			// For now, I'm not implementing game levels.
-			_score_keeper.GainScore(new BasicScoreGainData(indices.Length, 1));
+			_scoreKeeper.GainScore(new BasicScoreGainData(indices.Length, Level));
 
 			foreach (var observer in _observers)
 			{
 				observer.HandleRowsCleared(indices);
-				observer.HandleScored(_score_keeper.Score);
+				observer.HandleScored(_scoreKeeper.Score);
 			}
+
+			_UpdateLevel();
 		}
-		void IBoardObserver.HandleNewTetromino(Tetromino new_tetromino, Tetromino next_tetromino)
+		
+		void IBoardObserver.HandleNewTetromino(Tetromino newTetromino, Tetromino nextTetromino)
 		{
 			foreach (var observer in _observers)
 			{
-				observer.HandleNewTetromino(new_tetromino, next_tetromino);
+				observer.HandleNewTetromino(newTetromino, nextTetromino);
 			}
 		}
 		void IBoardObserver.HandleGameOver()
 		{
+			GameState = GameState.Over;
 			foreach (var observer in _observers)
 			{
 				observer.HandleGameOver();
@@ -72,9 +150,15 @@ namespace tetris_backend
 				observer.HandleGameStart();
 			}
 		}
+		void IBoardObserver.HandleBoardUpdated(TetrisBoard newBoard)
+		{
+			foreach (var observer in _observers)
+			{
+				observer.HandleBoardUpdated(newBoard);
+			}
+		}
 
-		public StateLogic(IScoreStore<PlayerScore> score_store) =>
-			_score_list = new ScoreList<PlayerScore>(score_store);
+		public StateLogic(IScoreStore<PlayerScore> scoreStore) =>
+			_scoreList = new ScoreList<PlayerScore>(scoreStore);
 	}
-
 }

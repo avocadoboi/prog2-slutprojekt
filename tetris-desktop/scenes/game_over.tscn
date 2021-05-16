@@ -1,0 +1,72 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://themes/global_theme.tres" type="Theme" id=1]
+[ext_resource path="res://assets/fonts/small.tres" type="DynamicFont" id=2]
+[ext_resource path="res://scripts/game_over/GameOver.cs" type="Script" id=3]
+[ext_resource path="res://scripts/game_over/GameOverScore.cs" type="Script" id=4]
+
+[node name="margin" type="MarginContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 1 )
+custom_constants/margin_right = 100
+custom_constants/margin_left = 100
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="container" type="VBoxContainer" parent="."]
+margin_left = 100.0
+margin_right = 350.0
+margin_bottom = 510.0
+custom_constants/separation = 20
+alignment = 1
+script = ExtResource( 3 )
+
+[node name="game_over" type="Label" parent="container"]
+margin_top = 64.0
+margin_right = 250.0
+margin_bottom = 120.0
+text = "Game over!"
+align = 1
+
+[node name="game_score" type="Label" parent="container"]
+margin_left = 85.0
+margin_top = 140.0
+margin_right = 165.0
+margin_bottom = 211.0
+size_flags_horizontal = 4
+custom_fonts/font = ExtResource( 2 )
+text = "Score: 
+Lines: "
+script = ExtResource( 4 )
+
+[node name="nickname" type="LineEdit" parent="container"]
+margin_top = 231.0
+margin_right = 250.0
+margin_bottom = 284.0
+placeholder_text = "Nickname"
+caret_blink = true
+caret_blink_speed = 0.5
+
+[node name="retry_container" type="CenterContainer" parent="container"]
+margin_top = 304.0
+margin_right = 250.0
+margin_bottom = 365.0
+
+[node name="button" type="Button" parent="container/retry_container"]
+margin_left = 65.0
+margin_right = 185.0
+margin_bottom = 61.0
+text = "Retry"
+
+[node name="main_menu_container" type="CenterContainer" parent="container"]
+margin_top = 385.0
+margin_right = 250.0
+margin_bottom = 446.0
+
+[node name="button" type="Button" parent="container/main_menu_container"]
+margin_left = 23.0
+margin_right = 227.0
+margin_bottom = 61.0
+text = "Main menu"

@@ -1,9 +1,8 @@
 using System.Linq;
 using System;
 
-namespace tetris_backend
+namespace TetrisBackend
 {
-
 	public enum TetrisCell
 	{
 		Empty, I, J, L, O, S, T, Z, Wall
@@ -18,17 +17,17 @@ namespace tetris_backend
 		public TetrisCell Type { get; private set; }
 
 		/*
-			Initializes the tetromino by replacing zeros in cell_flags
+			Initializes the tetromino by replacing zeros in cellFlags
 			with empty tetris cells and ones with the provided tetris cell type.
 		*/
-		public Tetromino(TetrisCell type, int[,] cell_flags)
+		public Tetromino(TetrisCell type, int[,] cellFlags)
 		{
 			Type = type;
-			Cells = Utils.CreateRectangularArray<TetrisCell>(new Vec2i(cell_flags.GetLength(1), cell_flags.GetLength(0)));
+			Cells = Utils.CreateRectangularArray<TetrisCell>(new Vec2i(cellFlags.GetLength(1), cellFlags.GetLength(0)));
 
 			foreach (var pos in Cells.Indices())
 			{
-				Cells[pos.Y][pos.X] = cell_flags[pos.Y, pos.X] == 0 ? TetrisCell.Empty : type;
+				Cells[pos.Y][pos.X] = cellFlags[pos.Y, pos.X] == 0 ? TetrisCell.Empty : type;
 			}
 		}
 		/*
@@ -84,5 +83,4 @@ namespace tetris_backend
 			})
 		};
 	}
-
 }

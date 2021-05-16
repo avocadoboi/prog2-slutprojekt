@@ -1,14 +1,17 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://themes/small_font.tres" type="Theme" id=1]
+[ext_resource path="res://assets/fonts/small.tres" type="DynamicFont" id=1]
 [ext_resource path="res://themes/global_theme.tres" type="Theme" id=2]
-[ext_resource path="res://scripts/game_container.cs" type="Script" id=3]
-[ext_resource path="res://scripts/board.cs" type="Script" id=4]
+[ext_resource path="res://scripts/game/GameScore.cs" type="Script" id=3]
+[ext_resource path="res://scripts/game/Board.cs" type="Script" id=4]
 [ext_resource path="res://themes/board.tres" type="StyleBox" id=5]
+[ext_resource path="res://scripts/game/NextTetromino.cs" type="Script" id=6]
+[ext_resource path="res://scripts/game/TetrominoTextures.cs" type="Script" id=7]
+[ext_resource path="res://scripts/game/GameContainer.cs" type="Script" id=8]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
-[node name="margin" type="MarginContainer"]
+[node name="gui" type="MarginContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme = ExtResource( 2 )
@@ -25,7 +28,7 @@ margin_left = 20.0
 margin_top = 20.0
 margin_right = 430.0
 margin_bottom = 490.0
-script = ExtResource( 3 )
+script = ExtResource( 8 )
 
 [node name="board" type="Panel" parent="game_container"]
 margin_bottom = 470.0
@@ -41,35 +44,58 @@ custom_constants/separation = 14
 
 [node name="right_side" type="VBoxContainer" parent="game_container"]
 margin_left = 22.0
-margin_right = 96.0
+margin_right = 410.0
 margin_bottom = 470.0
+size_flags_horizontal = 3
+custom_constants/separation = 10
+
+[node name="Label" type="Label" parent="game_container/right_side"]
+margin_right = 388.0
+margin_bottom = 56.0
+text = "Next"
+
+[node name="next" type="Panel" parent="game_container/right_side"]
+margin_top = 66.0
+margin_right = 388.0
+margin_bottom = 66.0
+custom_styles/panel = ExtResource( 5 )
+script = ExtResource( 6 )
+
+[node name="Label2" type="Label" parent="game_container/right_side"]
+margin_top = 76.0
+margin_right = 388.0
+margin_bottom = 132.0
+text = "Hold"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="hold" type="Panel" parent="game_container/right_side"]
+margin_top = 142.0
+margin_right = 388.0
+margin_bottom = 142.0
+custom_styles/panel = ExtResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="center" type="CenterContainer" parent="game_container/right_side"]
-margin_right = 74.0
-margin_bottom = 72.0
-theme = ExtResource( 1 )
+margin_top = 152.0
+margin_right = 388.0
+margin_bottom = 470.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="score_container" type="VBoxContainer" parent="game_container/right_side/center"]
-margin_right = 74.0
-margin_bottom = 72.0
+[node name="score" type="Label" parent="game_container/right_side/center"]
+margin_left = 145.0
+margin_top = 105.0
+margin_right = 242.0
+margin_bottom = 213.0
+custom_fonts/font = ExtResource( 1 )
+text = "Score: 0
+Lines: 0
+Level: 0"
+script = ExtResource( 3 )
 
-[node name="points" type="Label" parent="game_container/right_side/center/score_container"]
-margin_right = 74.0
-margin_bottom = 34.0
-text = "Score:"
-
-[node name="lines" type="Label" parent="game_container/right_side/center/score_container"]
-margin_top = 38.0
-margin_right = 74.0
-margin_bottom = 72.0
-text = "Lines:"
-
-[node name="highscores" type="GridContainer" parent="game_container/right_side"]
-margin_top = 76.0
-margin_right = 74.0
-margin_bottom = 76.0
-
-[node name="next" type="GridContainer" parent="game_container/right_side"]
-margin_top = 80.0
-margin_right = 74.0
-margin_bottom = 80.0
+[node name="tetromino_textures" type="Node" parent="."]
+script = ExtResource( 7 )

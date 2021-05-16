@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace tetris_backend
+namespace TetrisBackend
 {
-
 	/*
 		Something that can store score data between sessions.
 	*/
@@ -22,7 +21,9 @@ namespace tetris_backend
 		where T : IComparable<T>
 	{
 		private IScoreStore<T> _store;
+
 		private List<T> _scores;
+
 		public List<T> Scores => _scores;
 
 		public void AddScore(T score)
@@ -39,6 +40,12 @@ namespace tetris_backend
 				index = ~index;
 			}
 			_scores.Insert(index, score);
+			_store.SaveScores(_scores);
+		}
+
+		public void RemoveAll()
+		{
+			_scores = new List<T>();
 			_store.SaveScores(_scores);
 		}
 
@@ -157,8 +164,8 @@ namespace tetris_backend
 			return new PlayerScore(line[0..index], score);
 		}
 
-		public PlayerScoreFile(string file_name) =>
-			FilePath = file_name;
+		public PlayerScoreFile(string fileName) =>
+			FilePath = fileName;
 	}
 
 	/*
@@ -184,31 +191,16 @@ namespace tetris_backend
 			if it were able to calculate T-spin points than if it only 
 			calculated score based on level and rows cleared.
 		*/
-		void GainScore(_ScoreGainData score_gain_data);
+		void GainScore(_ScoreGainData scoreGainData);
 	}
 
 	readonly struct BasicScoreGainData
 	{
-		// private readonly int _rows_cleared;
 		public int RowsCleared { get; }
-		// {
-		// 	get => _rows_cleared;
-		// 	init
-		// 	{
-		// 		if (value >= 0 && value <= 4)
-		// 		{
-		// 			_rows_cleared = value;
-		// 		}
-		// 		else
-		// 		{
-		// 			throw new ArgumentOutOfRangeException(nameof(value), $"Only 1-4 rows can be cleared at once in Tetris.");
-		// 		}
-		// 	}
-		// }
 		public int GameLevel { get; }
 
-		public BasicScoreGainData(int rows_cleared, int game_level) =>
-			(RowsCleared, GameLevel) = (rows_cleared, game_level);
+		public BasicScoreGainData(int rowsCleared, int gameLevel) =>
+			(RowsCleared, GameLevel) = (rowsCleared, gameLevel);
 	}
 
 	/*
@@ -231,13 +223,13 @@ namespace tetris_backend
 
 			_points += data.RowsCleared switch
 			{
+				0 => 0,
 				1 => 40,
 				2 => 100,
 				3 => 300,
 				4 => 1200,
-				_ => 0,
+				_ => throw new ArgumentOutOfRangeException(nameof(data.RowsCleared), $"Only 1-4 rows can be cleared at once in Tetris."),
 			} * (data.GameLevel + 1);
 		}
 	}
-
 }

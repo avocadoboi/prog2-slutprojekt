@@ -1,59 +1,94 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace tetris_backend
+namespace TetrisBackend
 {
+	public enum TetrisInput
+	{
+		Left,
+		Right,
+		RotateLeft,
+		RotateRight,
+		HoldTetromino,
+		Drop,
+	}
 
-    public enum TetrisInput
-    {
-        Left,
-        Right,
-        RotateLeft,
-        RotateRight,
-        SwapTetromino,
-        SkipFall,
-        Restart
-    }
+	public class TetrisGame
+	{
+		private StateLogic _stateLogic;
+		private BoardLogic _boardLogic;
 
-    public class TetrisGame
-    {
-        private StateLogic _state_logic;
-        private BoardLogic _board_logic;
+		public List<PlayerScore> ScoreList => _stateLogic.ScoreList;
+		public CurrentScore CurrentScore => _stateLogic.CurrentScore;
+		public int CurrentLevel => _stateLogic.Level;
 
-        public TetrisBoard Board => _board_logic.Board;
-        // public GameState State => _state_logic.State;
-        // public List<PlayerScore> ScoreList => _state_logic.ScoreList;
-        // public CurrentScore Score => _state_logic.Score;
+		public void GiveInput(TetrisInput input)
+		{
+			if (_stateLogic.GameState == GameState.Over)
+			{
+				return;
+			}
+			
+			switch (input)
+			{
+			case TetrisInput.Left:
+				_boardLogic.MoveLeft();
+				break;
+			case TetrisInput.Right:
+				_boardLogic.MoveRight();
+				break;
+			case TetrisInput.RotateLeft:
+				_boardLogic.RotateLeft();
+				break;
+			case TetrisInput.RotateRight:
+				_boardLogic.RotateRight();
+				break;
+			case TetrisInput.Drop:
+				_boardLogic.Drop();
+				break;
+			case TetrisInput.HoldTetromino:
+				_boardLogic.HoldTetromino();
+				break;
+			}
+		}
+		public void Step()
+		{
+			if (_stateLogic.GameState == GameState.Over)
+			{
+				return;
+			}
 
-        public void GiveInput(TetrisInput input)
-        {
-            switch (input)
-            {
-                case TetrisInput.Restart:
-                    _board_logic.Restart();
-                    break;
-                    // case TetrisInput.
-            }
-        }
-        public void Step()
-        {
-            _board_logic.Step();
-        }
-        public void SaveScore(string player_name)
-        {
-            _state_logic.SaveScore(player_name);
-        }
+			_boardLogic.Step();
+		}
+		
+		public void Restart()
+		{
+			_boardLogic.Reset();
+			_stateLogic.Reset();
+		}
 
-        public void AddObserver(ITetrisStateObserver observer)
-        {
-            _state_logic.AddObserver(observer);
-        }
+		public void SaveScore(string playerName)
+		{
+			_stateLogic.SaveScore(playerName);
+		}
+		public void RemoveAllScores()
+		{
+			_stateLogic.RemoveAllScores();
+		}
 
-        public TetrisGame(Vec2i board_size, IScoreStore<PlayerScore> score_store)
-        {
-            _state_logic = new StateLogic(score_store);
-            _board_logic = new BoardLogic(board_size, _state_logic);
-        }
-    }
+		public void AddStateObserver(ITetrisStateObserver observer)
+		{
+			_stateLogic.AddObserver(observer);
+		}
+		public void RemoveStateObserver(ITetrisStateObserver observer)
+		{
+			_stateLogic.RemoveObserver(observer);
+		}
 
+		public TetrisGame(Vec2i boardSize, IScoreStore<PlayerScore> scoreStore)
+		{
+			_stateLogic = new StateLogic(scoreStore);
+			_boardLogic = new BoardLogic(boardSize, _stateLogic);
+		}
+	}
 }

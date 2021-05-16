@@ -2,9 +2,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\tetris-backend\tetris-backend\tetris-backend.csproj" />
 	</ItemGroup>
-	<!-- <ItemGroup>
-		<PackageReference Include="System.IO.Packaging" Version="5.0.0" />
-	</ItemGroup> -->
+	
 	<PropertyGroup>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<LangVersion>8.0</LangVersion>

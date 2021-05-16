@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace tetris_backend
+namespace TetrisBackend
 {
     public interface IGrid<T>
     {
@@ -70,14 +70,14 @@ namespace tetris_backend
 
     public static class GridExtensions
     {
-        public static void Draw(this IGrid<TetrisCell> board, IGrid<TetrisCell> to_draw, Vec2i position)
+        public static void Draw(this IGrid<TetrisCell> board, IGrid<TetrisCell> toDraw, Vec2i position)
         {
-            foreach (var pos in to_draw.Cells.Indices())
+            foreach (var pos in toDraw.Cells.Indices())
             {
-                if (to_draw.Cells[pos.Y][pos.X] != TetrisCell.Empty &&
+                if (toDraw.Cells[pos.Y][pos.X] != TetrisCell.Empty &&
                     new Vec2i(pos.X + position.X, pos.Y + position.Y).GetIsWithin(board.Cells.GetSize()))
                 {
-                    board.Cells[pos.Y + position.Y][pos.X + position.X] = to_draw.Cells[pos.Y][pos.X];
+                    board.Cells[pos.Y + position.Y][pos.X + position.X] = toDraw.Cells[pos.Y][pos.X];
                 }
             }
         }
@@ -90,5 +90,4 @@ namespace tetris_backend
         //         board.Cells[pos.Y + offset.Y][pos.X + offset.X] != TetrisCell.Empty);
         // }
     }
-
 }
