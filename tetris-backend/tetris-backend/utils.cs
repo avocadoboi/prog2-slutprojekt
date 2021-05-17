@@ -47,7 +47,7 @@ namespace TetrisBackend
         public static Vec2i GetSize<T>(this T[][] array) =>
             new Vec2i(array.GetWidth(), array.Length);
 
-        public static IEnumerable<Vec2i> Indices<T>(this T[][] array) =>
+        public static IEnumerable<Vec2i> Indices2D<T>(this T[][] array) =>
             Utils.Range2D(array.GetSize());
 
         public static IEnumerable<(int, T)> Enumerate<T>(this IEnumerable<T> enumerable) =>

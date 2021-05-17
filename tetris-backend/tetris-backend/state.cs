@@ -9,52 +9,14 @@ namespace TetrisBackend
 		Over,
 	}
 
-	public struct TetrisLevel
-	{
-		public int Level { get; private set; }
-
-		/*
-			Returns true if the level increased.
-		*/
-		public bool Update(int totalLinesScored)
-		{
-			// https://tetris.fandom.com/wiki/Tetris_(NES,_Nintendo)
-			// https://www.desmos.com/calculator/knpxxvajv5?lang=sv-SE
-			if (Level < 9 && totalLinesScored > 5*(Level + 1)*(Level + 2) ||
-				Level >= 9 && totalLinesScored > 100*Level - 350)
-			{
-				++Level;
-				return true;
-			}
-			return false;
-		}
-		public void Reset()
-		{
-			Level = 0;
-		}
-
-		public static int CalculateFramesPerCell(int level)
-		{
-			// https://tetris.fandom.com/wiki/Tetris_(NES,_Nintendo)
-			return level switch {
-				<0 => throw new ArgumentOutOfRangeException(nameof(level), "Negative tetris levels are impossible!"),
-				>=0 and <=8 => 48 - level*5,
-				9 => 6,
-				>=10 and <=12 => 5,
-				>=13 and <=15 => 4,
-				>=16 and <=18 => 3,
-				>=19 and <=28 => 2,
-				>=29 => 1,
-			};
-		}
-
-		public TetrisLevel(int startLevel) => Level = startLevel;
-	}
-
+	/*
+		Receives signals about changes in the game state that would be useful for a front-end implementation. 
+		It is meant to be implemented by the front-end program that uses this class library.
+	*/
 	public interface ITetrisStateObserver
 	{
-		void HandleNewTetromino(Tetromino newTetromino, Tetromino nextTetromino) { }
-		void HandleRowsCleared(int[] rowIndices) { }
+		void HandleTetrominoUpdated(TetrominoUpdate newTetrominoes) { }
+		void HandleLinesCleared(int[] rowIndices) { }
 		void HandleScored(CurrentScore newScore) { }
 		void HandleLevelUp(int newLevel) { }
 		void HandleGameOver() { }
@@ -62,6 +24,11 @@ namespace TetrisBackend
 		void HandleBoardUpdated(TetrisBoard newBoard) { }
 	}
 
+	/*
+		Manages the game state; things like score keeping, level keeping and running/game over states.
+		It receives signals through the IBoardObserver interface from the tetris board logic about things that happen in the game. 
+		It uses these callbacks to update the game state and send forward events to the user interface through the ITetrisStateObserver interface.
+	*/
 	class StateLogic : IBoardObserver
 	{
 		private BasicScoreKeeper _scoreKeeper = new BasicScoreKeeper();
@@ -75,16 +42,27 @@ namespace TetrisBackend
 
 		public GameState GameState { get; private set; }
 
-		public void Reset()
+		public void Restart()
 		{
 			GameState = GameState.Running;
 			_scoreKeeper = new BasicScoreKeeper();
 			_level.Reset();
+
+			foreach (var observer in _observers)
+			{
+				observer.HandleGameStart();
+			}
 		}
+		/*
+			Saves the current player score to the score store with the nickname playerName.
+		*/
 		public void SaveScore(string playerName)
 		{
 			_scoreList.AddScore(new PlayerScore(playerName, _scoreKeeper.Score.Points));
 		}
+		/*
+			Removes all player scores from the score store.
+		*/
 		public void RemoveAllScores()
 		{
 			_scoreList.RemoveAll();
@@ -106,7 +84,7 @@ namespace TetrisBackend
 		
 		private void _UpdateLevel()
 		{
-			if (_level.Update(CurrentScore.Rows))
+			if (_level.Update(CurrentScore.Lines))
 			{
 				foreach (var observer in _observers)
 				{
@@ -115,24 +93,23 @@ namespace TetrisBackend
 			}
 		}
 		
-		void IBoardObserver.HandleRowsCleared(int[] indices)
+		void IBoardObserver.HandleLinesCleared(int[] indices)
 		{
 			_scoreKeeper.GainScore(new BasicScoreGainData(indices.Length, Level));
+			_UpdateLevel();
 
 			foreach (var observer in _observers)
 			{
-				observer.HandleRowsCleared(indices);
+				observer.HandleLinesCleared(indices);
 				observer.HandleScored(_scoreKeeper.Score);
 			}
-
-			_UpdateLevel();
 		}
 		
-		void IBoardObserver.HandleNewTetromino(Tetromino newTetromino, Tetromino nextTetromino)
+		void IBoardObserver.HandleTetrominoUpdated(TetrominoUpdate newTetrominoes)
 		{
 			foreach (var observer in _observers)
 			{
-				observer.HandleNewTetromino(newTetromino, nextTetromino);
+				observer.HandleTetrominoUpdated(newTetrominoes);
 			}
 		}
 		void IBoardObserver.HandleGameOver()
@@ -143,13 +120,6 @@ namespace TetrisBackend
 				observer.HandleGameOver();
 			}
 		}
-		void IBoardObserver.HandleGameStart()
-		{
-			foreach (var observer in _observers)
-			{
-				observer.HandleGameStart();
-			}
-		}
 		void IBoardObserver.HandleBoardUpdated(TetrisBoard newBoard)
 		{
 			foreach (var observer in _observers)
@@ -158,7 +128,9 @@ namespace TetrisBackend
 			}
 		}
 
-		public StateLogic(IScoreStore<PlayerScore> scoreStore) =>
+		public StateLogic(IScoreStore<PlayerScore> scoreStore) {
+			_level.Reset();
 			_scoreList = new ScoreList<PlayerScore>(scoreStore);
+		}
 	}
 }

@@ -25,7 +25,7 @@ namespace TetrisBackend
 			Type = type;
 			Cells = Utils.CreateRectangularArray<TetrisCell>(new Vec2i(cellFlags.GetLength(1), cellFlags.GetLength(0)));
 
-			foreach (var pos in Cells.Indices())
+			foreach (var pos in Cells.Indices2D())
 			{
 				Cells[pos.Y][pos.X] = cellFlags[pos.Y, pos.X] == 0 ? TetrisCell.Empty : type;
 			}

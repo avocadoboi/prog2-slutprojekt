@@ -1,9 +1,9 @@
 using TetrisBackend;
 
-public class NextTetromino : TetrominoDisplay
+public class HoldTetromino : TetrominoDisplay
 {
 	protected override Tetromino _GetDisplayTetromino(TetrominoUpdate tetrominoes)
 	{
-		return tetrominoes.Next;
+		return tetrominoes.Hold;
 	}
 }

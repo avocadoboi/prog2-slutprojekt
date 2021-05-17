@@ -53,6 +53,9 @@ namespace TetrisBackend
 			(_store, _scores) = (store, store.LoadScores());
 	}
 
+	/*
+		Holds a player nickname and a score value.
+	*/
 	public readonly struct PlayerScore :
 		IComparable<PlayerScore>,
 		IComparable
@@ -134,7 +137,7 @@ namespace TetrisBackend
 		/*
 			Returns a list of player scores saved in the file by SaveScores.
 			If the file doesn't exist, an empty list is returned.
-			Throws FileFormatException if the file exists and has an invalid format.
+			Thlines FileFormatException if the file exists and has an invalid format.
 		*/
 		public List<PlayerScore> LoadScores()
 		{
@@ -166,70 +169,5 @@ namespace TetrisBackend
 
 		public PlayerScoreFile(string fileName) =>
 			FilePath = fileName;
-	}
-
-	/*
-		Holds the current game score.
-	*/
-	public readonly struct CurrentScore
-	{
-		public int Points { get; }
-		public int Rows { get; }
-
-		public CurrentScore(int points, int rows) =>
-			(Points, Rows) = (points, rows);
-	}
-
-	interface IScoreKeeper<_ScoreGainData>
-	{
-		CurrentScore Score { get; }
-
-		/*
-			Calculates a score gain from some data structure containing
-			information about the game state necessary to calculate score.
-			For example, this method would need a different data structure
-			if it were able to calculate T-spin points than if it only 
-			calculated score based on level and rows cleared.
-		*/
-		void GainScore(_ScoreGainData scoreGainData);
-	}
-
-	readonly struct BasicScoreGainData
-	{
-		public int RowsCleared { get; }
-		public int GameLevel { get; }
-
-		public BasicScoreGainData(int rowsCleared, int gameLevel) =>
-			(RowsCleared, GameLevel) = (rowsCleared, gameLevel);
-	}
-
-	/*
-		Keeps track of points and rows scored in a game.
-	*/
-	struct BasicScoreKeeper : IScoreKeeper<BasicScoreGainData>
-	{
-		private int _points;
-		private int _rows;
-
-		public CurrentScore Score => new CurrentScore(_points, _rows);
-
-		/*
-			Increases the score as a function of the number of rows cleared 
-			and the game level, according to https://tetris.fandom.com/wiki/Scoring
-		*/
-		public void GainScore(BasicScoreGainData data)
-		{
-			_rows += data.RowsCleared;
-
-			_points += data.RowsCleared switch
-			{
-				0 => 0,
-				1 => 40,
-				2 => 100,
-				3 => 300,
-				4 => 1200,
-				_ => throw new ArgumentOutOfRangeException(nameof(data.RowsCleared), $"Only 1-4 rows can be cleared at once in Tetris."),
-			} * (data.GameLevel + 1);
-		}
 	}
 }

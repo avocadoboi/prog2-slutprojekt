@@ -26,7 +26,7 @@ namespace TetrisBackend
             get => _cells;
             set
             {
-                // The array is jagged, so different rows could have different lengths,
+                // The array is jagged, so different lines could have different lengths,
                 // but it's not worth checking every row so we're assuming it's rectangular.
                 if (value.Length > 0 && value.Length == value[0].Length)
                 {
@@ -72,7 +72,7 @@ namespace TetrisBackend
     {
         public static void Draw(this IGrid<TetrisCell> board, IGrid<TetrisCell> toDraw, Vec2i position)
         {
-            foreach (var pos in toDraw.Cells.Indices())
+            foreach (var pos in toDraw.Cells.Indices2D())
             {
                 if (toDraw.Cells[pos.Y][pos.X] != TetrisCell.Empty &&
                     new Vec2i(pos.X + position.X, pos.Y + position.Y).GetIsWithin(board.Cells.GetSize()))

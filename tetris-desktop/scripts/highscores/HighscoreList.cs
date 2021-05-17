@@ -1,5 +1,5 @@
 using Godot;
-using System;
+using System.Linq;
 using TetrisBackend;
 using System.Collections.Generic;
 
@@ -28,7 +28,7 @@ public class HighscoreList : GridContainer
 
 	private void _AddScores(List<PlayerScore> scores)
 	{
-		foreach ((int i, PlayerScore item) in scores.Enumerate())
+		foreach ((int i, PlayerScore item) in scores.Take(6).Enumerate())
 		{
 			AddChild(new Label() { Text = $"{i+1}." });
 			AddChild(new Label() { Text = item.Name });

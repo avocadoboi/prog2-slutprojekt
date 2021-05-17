@@ -4,31 +4,18 @@ using TetrisBackend;
 
 public class GameContainer : HBoxContainer, ITetrisStateObserver
 {
+	private float _stepInterval = TetrisLevel.CalculateSecondsPerCell(0);
+	private bool _isSpeedActivated = false;
+	private float _timeSinceLastStep;
+	
 	public override void _Ready()
 	{
-		BackendInstance.Game.Restart();
 		BackendInstance.Game.AddStateObserver(this);
+		BackendInstance.Game.Restart();
 	}
 	public override void _ExitTree()
 	{
 		BackendInstance.Game.RemoveStateObserver(this);
-	}
-
-	void ITetrisStateObserver.HandleGameOver()
-	{
-		GetTree().ChangeScene("res://scenes/game_over.tscn");
-	}
-
-	private static float _StepIntervalFromLevel(int level)
-	{
-		return TetrisLevel.CalculateFramesPerCell(level)/60f;
-	}
-
-	float _stepInterval = _StepIntervalFromLevel(0);
-
-	void ITetrisStateObserver.HandleLevelUp(int newLevel)
-	{
-		_stepInterval = _StepIntervalFromLevel(newLevel);
 	}
 
     public override void _UnhandledInput(InputEvent @event)
@@ -59,16 +46,55 @@ public class GameContainer : HBoxContainer, ITetrisStateObserver
 		{
 			BackendInstance.Game.GiveInput(TetrisInput.HoldTetromino);
 		}
+		else if (@event.IsActionPressed("speed_fall"))
+		{
+			_ActivateSpeedFall();
+		}
+		else if (@event.IsActionReleased("speed_fall"))
+		{
+			_DeactivateSpeedFall();
+		}
     }
 
-	float timeSinceLastStep;
+	void _ActivateSpeedFall()
+	{
+		if (!_isSpeedActivated)
+		{
+			_isSpeedActivated = true;
+			_timeSinceLastStep = 0f;
+		}
+	}
+	void _DeactivateSpeedFall()
+	{
+		if (_isSpeedActivated)
+		{
+			_isSpeedActivated = false;
+			// _timeSinceLastStep = 0f;
+		}
+	}
+
+	void ITetrisStateObserver.HandleGameOver()
+	{
+		GetTree().ChangeScene("res://scenes/game_over.tscn");
+	}
+	void ITetrisStateObserver.HandleTetrominoUpdated(TetrominoUpdate newTetrominoes)
+	{
+		_DeactivateSpeedFall();
+	}
+
+	void ITetrisStateObserver.HandleLevelUp(int newLevel)
+	{
+		_stepInterval = TetrisLevel.CalculateSecondsPerCell(newLevel);
+	}
 
 	public override void _Process(float delta)
 	{
-		timeSinceLastStep += delta;
-		if (timeSinceLastStep > _stepInterval)
+		var actualInterval = _isSpeedActivated ? 1f/30f : _stepInterval;
+		
+		_timeSinceLastStep += delta;
+		while (_timeSinceLastStep > actualInterval)
 		{
-			timeSinceLastStep -= _stepInterval;
+			_timeSinceLastStep -= actualInterval;
 
 			BackendInstance.Game.Step();
 		}
