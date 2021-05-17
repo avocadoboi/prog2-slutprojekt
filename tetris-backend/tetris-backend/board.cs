@@ -139,6 +139,7 @@ namespace TetrisBackend
 
 		private Tetromino _nextTetromino = Tetrominoes.GetRandom();
 		private Tetromino _holdTetromino;
+		private bool _hasSwappedHold; // Only one swap allowed per new tetromino.
 
 		private Tetromino _activeTetromino;
 		private Vec2i _tetrominoPosition;
@@ -198,6 +199,8 @@ namespace TetrisBackend
 		*/
 		private void _PlaceTetromino()
 		{
+			_hasSwappedHold = false;
+
 			_board.Draw(_activeTetromino, _tetrominoPosition);
 
 			var fullRowIndices = _board.FindFullLines();
@@ -276,13 +279,22 @@ namespace TetrisBackend
 
 		public void HoldTetromino()
 		{
+			if (_hasSwappedHold)
+			{
+				return;
+			}
+			
+			_hasSwappedHold = true;
+
 			if (_holdTetromino == null)
 			{
+				// If there's no hold tetromino then we take a new tetromino and put the active one in the hold slot.
 				_holdTetromino = _activeTetromino;
 				_SpawnTetromino();
 			}
 			else
 			{
+				// If there's already a hold tetromino then we swap it with the active one.
 				(_holdTetromino, _activeTetromino) = (_activeTetromino, _holdTetromino);
 				_RespawnTetromino();
 			}

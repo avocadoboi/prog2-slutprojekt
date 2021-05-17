@@ -70,11 +70,11 @@ namespace TetrisBackendTests
                 new TetrisCell[3]{0,            TetrisCell.T, 0           },
 			};
 
-			var fullRows = board.FindFullRows();
+			var fullRows = board.FindFullLines();
 			var expectedFullRows = new int[]{1, 2, 3, 7, 8};
 			Assert.Equal(expectedFullRows, fullRows);
 			
-			board.ClearFullRows();
+			board.ClearFullLines();
 			Assert.Equal(expectedBoard, board.Cells);
         }
     }
