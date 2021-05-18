@@ -12,24 +12,24 @@ public abstract class TetrominoDisplay : Panel, ITetrisStateObserver
 		BackendInstance.Game.RemoveStateObserver(this);
 	}
 
-    public override void _Notification(int what)
-    {
-        base._Notification(what);
+	public override void _Notification(int what)
+	{
+		base._Notification(what);
 
 		// Keeps the panel square.
 		if (what == NotificationResized && RectSize.x != RectMinSize.y)
 		{
 			RectMinSize = new Vector2(0, RectSize.x);
 		}
-    }
+	}
 
 	private Tetromino _tetromino;
 
-    protected abstract Tetromino _GetDisplayTetromino(TetrominoUpdate update);
+	protected abstract Tetromino _GetDisplayTetromino(TetrominoUpdate update);
 
 	public void HandleTetrominoUpdated(TetrominoUpdate newTetrominoes)
 	{
-        var displayTetromino = _GetDisplayTetromino(newTetrominoes);
+		var displayTetromino = _GetDisplayTetromino(newTetrominoes);
 		if (displayTetromino != _tetromino)
 		{
 			_tetromino = displayTetromino;

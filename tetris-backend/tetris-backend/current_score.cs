@@ -2,7 +2,7 @@ using System;
 
 namespace TetrisBackend
 {
-    /*
+	/*
 		Holds the current game score.
 	*/
 	public readonly struct CurrentScore

@@ -15,16 +15,16 @@ namespace TetrisBackend
 		*/
 		public bool Update(int totalLinesScored)
 		{
-            if (totalLinesScored >= Level*10)
-            {
-                ++Level;
-                return true;
-            }
-            return false;
-            
-            // This below is what I derived from the table on the website.
-            // I thought it was progressing too slowly, so I changed it to the above. 
-            // The game on https://tetris.com/play-tetris increases the level every 10 lines too.
+			if (totalLinesScored >= Level*10)
+			{
+				++Level;
+				return true;
+			}
+			return false;
+			
+			// This below is what I derived from the table on the website.
+			// I thought it was progressing too slowly, so I changed it to the above. 
+			// The game on https://tetris.com/play-tetris increases the level every 10 lines too.
  
 			// https://tetris.fandom.com/wiki/Tetris_(NES,_Nintendo)
 			// https://www.desmos.com/calculator/knpxxvajv5?lang=sv-SE
@@ -39,7 +39,7 @@ namespace TetrisBackend
 		public void Reset()
 		{
 			Level = 0;
-            Update(0);
+			Update(0);
 		}
 
 		public TetrisLevel(int startLevel) => Level = startLevel;

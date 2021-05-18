@@ -24,6 +24,7 @@ namespace TetrisBackendTests
 			list.AddScore(new PlayerScore("Snigel", -4));
 			list.AddScore(new PlayerScore("Palettblad", 70));
 
+			// The expected score list is sorted by score, descending.
 			var expectedList = new List<PlayerScore> {
 				new PlayerScore("Palettblad", 70),
 				new PlayerScore("Snudin", 8),
@@ -33,6 +34,7 @@ namespace TetrisBackendTests
 			};
 			Assert.Equal(expectedList, list.Scores);
 
+			// Load the scores from the file again.
 			var newList = new ScoreList<PlayerScore>(new PlayerScoreFile(FILE_NAME));
 			Assert.Equal(expectedList, newList.Scores);
 		}

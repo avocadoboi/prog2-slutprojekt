@@ -78,11 +78,11 @@ namespace TetrisBackend
 		public bool IntersectsTetromino(Tetromino tetromino, Vec2i offset) 
 		{
 			return tetromino.Cells.Indices2D().Any(pos =>
-                tetromino.Cells[pos.Y][pos.X] != TetrisCell.Empty && 
+				tetromino.Cells[pos.Y][pos.X] != TetrisCell.Empty && 
 				// If any non-empty cell within the tetromino is outside the bounds of the board then it intersects.
-                (!new Vec2i(pos.X + offset.X, pos.Y + offset.Y).GetIsWithin(Size) ||
+				(!new Vec2i(pos.X + offset.X, pos.Y + offset.Y).GetIsWithin(Size) ||
 				// If two non-empty cells overlap then the tetromino intersects the board.
-                Cells[pos.Y + offset.Y][pos.X + offset.X] != TetrisCell.Empty));
+				Cells[pos.Y + offset.Y][pos.X + offset.X] != TetrisCell.Empty));
 		}
 
 		/*

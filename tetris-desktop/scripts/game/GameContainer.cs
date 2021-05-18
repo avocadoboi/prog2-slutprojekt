@@ -5,7 +5,7 @@ using TetrisBackend;
 public class GameContainer : HBoxContainer, ITetrisStateObserver
 {
 	private float _stepInterval = TetrisLevel.CalculateSecondsPerCell(0);
-	private bool _isSpeedActivated = false;
+	private bool _isSoftDropActivated = false;
 	private float _timeSinceLastStep;
 	
 	public override void _Ready()
@@ -18,9 +18,9 @@ public class GameContainer : HBoxContainer, ITetrisStateObserver
 		BackendInstance.Game.RemoveStateObserver(this);
 	}
 
-    public override void _UnhandledInput(InputEvent @event)
-    {
-        base._UnhandledInput(@event);
+	public override void _UnhandledInput(InputEvent @event)
+	{
+		base._UnhandledInput(@event);
 
 		if (@event.IsActionPressed("move_left"))
 		{
@@ -41,34 +41,35 @@ public class GameContainer : HBoxContainer, ITetrisStateObserver
 		else if (@event.IsActionPressed("drop_tetromino"))
 		{
 			BackendInstance.Game.GiveInput(TetrisInput.Drop);
+			GetNode<AudioStreamPlayer>("../bonk").Play();
 		}
 		else if (@event.IsActionPressed("hold_tetromino"))
 		{
 			BackendInstance.Game.GiveInput(TetrisInput.HoldTetromino);
 		}
-		else if (@event.IsActionPressed("speed_fall"))
+		else if (@event.IsActionPressed("soft_drop"))
 		{
-			_ActivateSpeedFall();
+			_ActivateSoftDrop();
 		}
-		else if (@event.IsActionReleased("speed_fall"))
+		else if (@event.IsActionReleased("soft_drop"))
 		{
-			_DeactivateSpeedFall();
+			_DeactivateSoftDrop();
 		}
-    }
+	}
 
-	void _ActivateSpeedFall()
+	void _ActivateSoftDrop()
 	{
-		if (!_isSpeedActivated)
+		if (!_isSoftDropActivated)
 		{
-			_isSpeedActivated = true;
+			_isSoftDropActivated = true;
 			_timeSinceLastStep = 0f;
 		}
 	}
-	void _DeactivateSpeedFall()
+	void _DeactivateSoftDrop()
 	{
-		if (_isSpeedActivated)
+		if (_isSoftDropActivated)
 		{
-			_isSpeedActivated = false;
+			_isSoftDropActivated = false;
 			// _timeSinceLastStep = 0f;
 		}
 	}
@@ -79,7 +80,7 @@ public class GameContainer : HBoxContainer, ITetrisStateObserver
 	}
 	void ITetrisStateObserver.HandleTetrominoUpdated(TetrominoUpdate newTetrominoes)
 	{
-		_DeactivateSpeedFall();
+		_DeactivateSoftDrop();
 	}
 
 	void ITetrisStateObserver.HandleLevelUp(int newLevel)
@@ -89,7 +90,7 @@ public class GameContainer : HBoxContainer, ITetrisStateObserver
 
 	public override void _Process(float delta)
 	{
-		var actualInterval = _isSpeedActivated ? 1f/30f : _stepInterval;
+		var actualInterval = _isSoftDropActivated ? Math.Min(Constants.softDropInterval, _stepInterval) : _stepInterval;
 		
 		_timeSinceLastStep += delta;
 		while (_timeSinceLastStep > actualInterval)
