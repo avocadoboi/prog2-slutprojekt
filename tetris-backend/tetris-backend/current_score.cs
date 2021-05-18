@@ -14,20 +14,24 @@ namespace TetrisBackend
 			(Points, Lines) = (points, lines);
 	}
 
+	/*
+		Has the responsibility of updating the score based on game state.
+	*/
 	interface IScoreKeeper<_ScoreGainData>
 	{
 		CurrentScore Score { get; }
 
 		/*
-			Calculates a score gain from some data structure containing
-			information about the game state necessary to calculate score.
-			For example, this method would need a different data structure
-			if it were able to calculate T-spin points than if it only 
+			Calculates a score gain from some data structure containing information about the game state necessary to calculate score.
+			For example, this method would need a different data structure if it were able to calculate T-spin points than if it only 
 			calculated score based on level and lines cleared.
 		*/
 		void GainScore(_ScoreGainData scoreGainData);
 	}
 
+	/*
+		This only holds enough information to calculate score based on number of lines cleared and current game level.
+	*/
 	readonly struct BasicScoreGainData
 	{
 		public int LinesCleared { get; }
@@ -38,7 +42,7 @@ namespace TetrisBackend
 	}
 
 	/*
-		Keeps track of points and lines scored in a game.
+		Keeps track of points and lines scored in a game based on lines cleared and current game level.
 	*/
 	struct BasicScoreKeeper : IScoreKeeper<BasicScoreGainData>
 	{

@@ -97,7 +97,8 @@ namespace TetrisBackend
 			// It is intended that the program crashes in that case because that would indicate a bug.
 			// A drop position should always be found, since IntersectsTetromino returns true if any non-empty cell in the tetromino is outside the
 			// bounds of the board - which it definitely is at Size.Y + tetromino.Width unless the tetromino is empty.
-			return Enumerable.Range(offset.Y + 1, Size.Y + tetromino.Width).First(y => IntersectsTetromino(tetromino, new Vec2i(offset.X, y))) - 1;
+			return Enumerable.Range(offset.Y + 1, Size.Y + tetromino.Width)
+				.First(y => IntersectsTetromino(tetromino, new Vec2i(offset.X, y))) - 1;
 		}
 
 		public TetrisBoard(Vec2i size) =>
@@ -107,6 +108,9 @@ namespace TetrisBackend
 			(Cells, Size) = (other.Cells.Select(row => row.ToArray()).ToArray(), other.Size);
 	}
 
+	/*
+		Objects of this type are sent to board observers when the active, next and/or hold tetrominoes change.
+	*/
 	public readonly struct TetrominoUpdate
 	{
 		public Tetromino Active { get; }
@@ -298,7 +302,9 @@ namespace TetrisBackend
 				(_holdTetromino, _activeTetromino) = (_activeTetromino, _holdTetromino);
 				_RespawnTetromino();
 			}
+			
 			_observer.HandleTetrominoUpdated(new TetrominoUpdate(_activeTetromino, _nextTetromino, _holdTetromino));
+
 			_UpdateBoard();
 		}
 

@@ -42,6 +42,9 @@ namespace TetrisBackend
 
 		public GameState GameState { get; private set; }
 
+		/*
+			Resets the game state and starts a new game.
+		*/
 		public void Restart()
 		{
 			GameState = GameState.Running;

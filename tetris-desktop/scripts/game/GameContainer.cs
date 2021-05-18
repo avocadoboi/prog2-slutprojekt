@@ -88,8 +88,18 @@ public class GameContainer : HBoxContainer, ITetrisStateObserver
 		_stepInterval = TetrisLevel.CalculateSecondsPerCell(newLevel);
 	}
 
+	private float backgroundHue = 0f;
+
+	private void _UpdateBackgroundHue()
+	{
+		VisualServer.SetDefaultClearColor(Color.FromHsv(backgroundHue, 0.4f, 1f));
+		backgroundHue += 0.002f;
+	}
+
 	public override void _Process(float delta)
 	{
+		// The interval in seconds between two game steps.
+		// It is faster if soft drop is activated (unless the game has progressed very far).
 		var actualInterval = _isSoftDropActivated ? Math.Min(Constants.softDropInterval, _stepInterval) : _stepInterval;
 		
 		_timeSinceLastStep += delta;
@@ -99,5 +109,7 @@ public class GameContainer : HBoxContainer, ITetrisStateObserver
 
 			BackendInstance.Game.Step();
 		}
+
+		_UpdateBackgroundHue();
 	}
 }

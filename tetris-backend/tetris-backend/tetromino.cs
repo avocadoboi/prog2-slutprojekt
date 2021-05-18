@@ -9,16 +9,15 @@ namespace TetrisBackend
 	}
 
 	/*
-		A tetromino is a square grid of tetris cells that can be constructed 
-		conveniently from a grid of cell flags and a cell type.
+		A tetromino is a square grid of tetris cells that can be constructed conveniently from a grid of cell flags and a cell type.
 	*/
 	public class Tetromino : SquareGrid<TetrisCell>
 	{
 		public TetrisCell Type { get; private set; }
 
 		/*
-			Initializes the tetromino by replacing zeros in cellFlags
-			with empty tetris cells and ones with the provided tetris cell type.
+			Initializes the tetromino by replacing zeros in "cellFlags" with empty tetris cells and ones with the provided tetris cell type.
+			"cellFlags" is a 2D array instead of a jagged array because those are easier to write in code.
 		*/
 		public Tetromino(TetrisCell type, int[,] cellFlags)
 		{
@@ -37,8 +36,14 @@ namespace TetrisBackend
 			(Type, Cells) = (other.Type, other.Cells.Select(row => row.ToArray()).ToArray());
 	}
 
+	/*
+		Holds a collection of tetrominoes that are used in Tetris.
+	*/
 	static class Tetrominoes
 	{
+		/*
+			Selects a random tetromino.
+		*/
 		public static Tetromino GetRandom()
 		{
 			return tetrominoes[new Random().Next(tetrominoes.Length)];

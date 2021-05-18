@@ -25,9 +25,12 @@ public abstract class TetrominoDisplay : Panel, ITetrisStateObserver
 
 	private Tetromino _tetromino;
 
+	/*
+		Returns the tetromino to display.
+	*/
 	protected abstract Tetromino _GetDisplayTetromino(TetrominoUpdate update);
 
-	public void HandleTetrominoUpdated(TetrominoUpdate newTetrominoes)
+	void ITetrisStateObserver.HandleTetrominoUpdated(TetrominoUpdate newTetrominoes)
 	{
 		var displayTetromino = _GetDisplayTetromino(newTetrominoes);
 		if (displayTetromino != _tetromino)

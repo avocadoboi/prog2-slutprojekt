@@ -28,6 +28,10 @@ namespace TetrisBackend
 		public int CurrentLevel => _stateLogic.Level;
 
 		/*
+			This method can be thought of as a game controller port.
+			Pass an action as a TetrisInput enumeration to give player input to the game.
+			This method causes observers to be notified of game board changes, for instance.
+			Nothing happens if the current game is over. Call Restart to restart the game.
 		*/
 		public void GiveInput(TetrisInput input)
 		{
@@ -59,6 +63,8 @@ namespace TetrisBackend
 			}
 		}
 		/*
+			Moves the active tetromino one step downwards due to "gravity" and handles any tetromino placement and scoring that may lead to.
+			Nothing happens if the current game is over. Call Restart to restart the game.
 		*/
 		public void Step()
 		{
@@ -70,6 +76,9 @@ namespace TetrisBackend
 			_boardLogic.Step();
 		}
 		
+		/*
+			Resets all game state and starts a new game, keeping the same board size and score store.
+		*/
 		public void Restart()
 		{
 			_boardLogic.Restart();
@@ -92,14 +101,17 @@ namespace TetrisBackend
 		}
 
 		/*
-
+			Enables an object to be updated of changes in game state.
+			Attaching an observer is necessary for implementing a Tetris front-end since that is, for example, 
+			how updates to the game board are made accessible.
+			Remember to call RemoveStateObserver if you want your observer to die before this tetris game dies.
 		*/
 		public void AddStateObserver(ITetrisStateObserver observer)
 		{
 			_stateLogic.AddObserver(observer);
 		}
 		/*
-
+			Removes a game state observer from the list of observers to notify.
 		*/
 		public void RemoveStateObserver(ITetrisStateObserver observer)
 		{
