@@ -2,6 +2,9 @@ using Godot;
 using System;
 using TetrisBackend;
 
+/*
+	Displays the current game score.
+*/
 public class GameScore : Label, ITetrisStateObserver
 {
 	public override void _Ready()

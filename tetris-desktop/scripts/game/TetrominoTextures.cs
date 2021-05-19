@@ -2,6 +2,9 @@ using Godot;
 using System.Collections.Generic;
 using TetrisBackend;
 
+/*
+	Loads and holds the different tetromino textures.
+*/
 public class TetrominoTextures : Node
 {
 	private Dictionary<TetrisCell, Texture> _textures = new Dictionary<TetrisCell, Texture> 
@@ -18,6 +21,8 @@ public class TetrominoTextures : Node
 	public Dictionary<TetrisCell, Texture> Textures => _textures;
 
 	private static Texture _LoadCell(string fileName) {
-		return GD.Load<Texture>("res://assets/images/" + fileName);
+		var texture = GD.Load<Texture>("res://assets/images/" + fileName);
+		texture.Flags = (uint)(Texture.FlagsEnum.AnisotropicFilter | Texture.FlagsEnum.Filter | Texture.FlagsEnum.Mipmaps);
+		return texture;
 	}
 }

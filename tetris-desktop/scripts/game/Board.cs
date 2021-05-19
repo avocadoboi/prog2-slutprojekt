@@ -27,6 +27,9 @@ public static class BoardUtils
 	}
 }
 
+/*
+	Displays the main tetris game grid.
+*/
 public class Board : Panel, ITetrisStateObserver
 {
 	private float _cellWidth;

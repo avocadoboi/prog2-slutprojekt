@@ -1,6 +1,9 @@
 using Godot;
 using TetrisBackend;
 
+/*
+	Displays a tetromino in a square panel.
+*/
 public abstract class TetrominoDisplay : Panel, ITetrisStateObserver
 {
 	public override void _Ready()

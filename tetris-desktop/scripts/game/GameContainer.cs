@@ -2,6 +2,9 @@ using Godot;
 using System;
 using TetrisBackend;
 
+/*
+	Manages game input and updates the game.
+*/
 public class GameContainer : HBoxContainer, ITetrisStateObserver
 {
 	private float _stepInterval = TetrisLevel.CalculateSecondsPerCell(0);
@@ -22,11 +25,11 @@ public class GameContainer : HBoxContainer, ITetrisStateObserver
 	{
 		base._UnhandledInput(@event);
 
-		if (@event.IsActionPressed("move_left"))
+		if (@event.IsActionPressed("move_left", true))
 		{
 			BackendInstance.Game.GiveInput(TetrisInput.Left);
 		}
-		else if (@event.IsActionPressed("move_right"))
+		else if (@event.IsActionPressed("move_right", true))
 		{
 			BackendInstance.Game.GiveInput(TetrisInput.Right);
 		}
@@ -93,7 +96,7 @@ public class GameContainer : HBoxContainer, ITetrisStateObserver
 	private void _UpdateBackgroundHue()
 	{
 		VisualServer.SetDefaultClearColor(Color.FromHsv(backgroundHue, 0.4f, 1f));
-		backgroundHue += 0.002f;
+		backgroundHue += 0.0001f*(float)Math.Pow(BackendInstance.Game.CurrentLevel, 2);
 	}
 
 	public override void _Process(float delta)

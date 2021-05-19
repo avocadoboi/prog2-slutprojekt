@@ -1,6 +1,9 @@
 using Godot;
 using System;
 
+/*
+	Shows the player score at the game over screen after a game.
+*/
 public class GameOverScore : Label
 {
 	public override void _Ready()
