@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/yOwzA.mp3-08095dfd218e6bb4cd31eb40f0ca9c52.mp3str"
+
+[deps]
+
+source_file="res://assets/sounds/yOwzA.mp3"
+dest_files=[ "res://.import/yOwzA.mp3-08095dfd218e6bb4cd31eb40f0ca9c52.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0

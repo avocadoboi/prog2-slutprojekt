@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/bep bop.mp3-078bff32624a41f83ad99f3f490a2043.mp3str"
+
+[deps]
+
+source_file="res://assets/sounds/bep bop.mp3"
+dest_files=[ "res://.import/bep bop.mp3-078bff32624a41f83ad99f3f490a2043.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0

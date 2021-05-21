@@ -8,6 +8,7 @@ public class GameOver : VBoxContainer
 	{
 		GetNode("retry_container/button").Connect("pressed", this, nameof(_HandleRetryPress));
 		GetNode("main_menu_container/button").Connect("pressed", this, nameof(_HandleMainMenuPress));
+		GetNode<AudioStreamPlayer>("../smack").Play();
 	}
 
 	private void _HandleRetryPress()

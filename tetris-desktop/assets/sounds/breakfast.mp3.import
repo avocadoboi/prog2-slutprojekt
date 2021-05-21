@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/breakfast.mp3-c2a25cfd5cba2abf2f35442e18796ac0.mp3str"
+
+[deps]
+
+source_file="res://assets/sounds/breakfast.mp3"
+dest_files=[ "res://.import/breakfast.mp3-c2a25cfd5cba2abf2f35442e18796ac0.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0

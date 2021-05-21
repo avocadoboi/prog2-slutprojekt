@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/triumph.mp3-fbb21a7a05a9d0c1266975500e265e3b.mp3str"
+
+[deps]
+
+source_file="res://assets/sounds/triumph.mp3"
+dest_files=[ "res://.import/triumph.mp3-fbb21a7a05a9d0c1266975500e265e3b.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0
